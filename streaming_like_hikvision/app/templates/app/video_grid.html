@@ -1,0 +1,247 @@
+{% comment %} NORMAL WORKING  {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Video Streams</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr); /* Adjust grid for more videos */
+            gap: 10px;
+            padding: 10px;
+        }
+        .video-cell {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Video Streams</h1>
+    <div class="grid-container">
+        {% for path in hls_paths %}
+        <div class="video-cell">
+            <video id="video{{ forloop.counter }}" controls></video>
+            <script>
+                var video = document.getElementById('video{{ forloop.counter }}');
+                if (Hls.isSupported()) {
+                    var hls = new Hls();
+                    hls.loadSource('{{ path }}');  // HLS stream URL from Django context
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        console.log('Manifest loaded, found ' + hls.levels.length + ' quality level');
+                    });
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            switch (data.fatal) {
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    console.error('A network error occurred');
+                                    break;
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    console.error('A media error occurred');
+                                    break;
+                                case Hls.ErrorTypes.OTHER_ERROR:
+                                    console.error('An unknown error occurred');
+                                    break;
+                                default:
+                                    console.error('An error occurred: ', data);
+                            }
+                        }
+                    });
+                }
+                // Fallback for browsers that do not support Hls.js (e.g., Safari)
+                else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = '{{ path }}';
+                }
+            </script>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>       
+
+  
+
+ 
+
+
+
+
+ {% comment %} #################async await################## {% endcomment %}
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Video Streams</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr); /* Adjust grid for more videos */
+            gap: 10px;
+            padding: 10px;
+        }
+        .video-cell {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Video Streams</h1>
+    <div class="grid-container">
+        {% for path in hls_paths %}
+        <div class="video-cell">
+            <video id="video{{ forloop.counter }}" controls muted autoplay></video>
+            <script>
+                // Ensure HLS.js is supported
+                var video = document.getElementById('video{{ forloop.counter }}');
+                if (Hls.isSupported()) {
+                    var hls = new Hls();
+                    hls.loadSource("{{ path }}");  // Pass the HLS stream URL here
+                    hls.attachMedia(video);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        console.log('Manifest parsed for camera {{ forloop.counter }}');
+                    });
+
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            switch(data.fatal) {
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    console.error('A network error occurred');
+                                    break;
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    console.error('A media error occurred');
+                                    break;
+                                case Hls.ErrorTypes.OTHER_ERROR:
+                                    console.error('An unknown error occurred');
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    });
+                }
+                else {
+                    console.error("HLS.js is not supported in this browser.");
+                    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                        // Fallback for Safari (which natively supports HLS)
+                        video.src = "{{ path }}";
+                    }
+                }
+            </script>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>   
+
+  {% endcomment %}
+
+
+
+
+
+
+
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Video Streams</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr); /* Adjust grid for more videos */
+        gap: 10px;
+        padding: 10px;
+    }
+    .video-cell {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #000;
+    }
+    video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+</style>
+</head>
+<body>
+<h1>Live Video Streams</h1>
+<div class="grid-container">    
+    {% for path in hls_paths %}
+    <div class="video-cell">
+        <video id="video{{ forloop.counter }}" controls></video>
+        <script>
+            var video = document.getElementById('video{{ forloop.counter }}');
+            if (Hls.isSupported()) {
+                // Create an instance of Hls.js
+                var hls = new Hls();
+
+                // Optimizations for smoother playback
+                hls.startLevel = 0;  // Start at the lowest quality level
+                hls.startFragPrefetch = true;  // Prefetch more segments to reduce bufferi`ng
+                hls.loadSource('{{ path }}');  // Load the HLS stream (playlist URL)
+                hls.attachMedia(video);  // Attach the video element to the player
+
+                // Log when the HLS manifest is loaded
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    console.log('Manifest loaded, found ' + hls.levels.length + ' quality levels');
+                });
+
+                // Handle errors
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        switch (data.fatal) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.error('Network error occurred');
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.error('Media error occurred');
+                                break;
+                            case Hls.ErrorTypes.OTHER_ERROR:
+                                console.error('An unknown error occurred');
+                                break;
+                            default:
+                                console.error('Error occurred: ', data);
+                        }
+                    }
+                });
+            }
+            // Fallback for Safari (natively supports HLS without Hls.js)
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = '{{ path }}';
+            }
+        </script>
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>  
+
+
+ {% endcomment %}
